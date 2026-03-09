@@ -56,14 +56,16 @@ const baseQuestions=[
 {q:"Dans quelle République sommes-nous ?",a:["Cinquième","Quatrième","Troisième","Deuxième"],c:0}
 ];
 
-let questionBank=[];
-for(let i=0;i<400;i++){
+const questionBank = [...baseQuestions]
 let q=JSON.parse(JSON.stringify(baseQuestions[i%baseQuestions.length]));
 questionBank.push(q);
 }
 
 /* ===== UTIL ===== */
-
+function getRandomQuestions(bank,n){
+  const shuffled=[...bank].sort(()=>Math.random()-0.5)
+  return shuffled.slice(0,n)
+}
 function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
 
 /* ===== EXAM MODE ===== */
@@ -76,7 +78,7 @@ let timeLeft=2700;
 let wrong=[];
 
 function startExam(){
-quiz=shuffle([...questionBank]).slice(0,40);
+quiz=getRandomQuestions(questionBank,40);
 index=0;
 score=0;
 wrong=[];
