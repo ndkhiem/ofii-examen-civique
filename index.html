@@ -3,26 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OFII Civique Trainer Pro</title>
+<title>OFII Civique Trainer</title>
 <style>
-body{font-family:Arial,Helvetica,sans-serif;background:#eef2f7;margin:0;padding:0}
-header{background:#2563eb;color:white;padding:15px;text-align:center;font-size:20px;font-weight:bold}
+body{font-family:Arial;background:#f2f4f8;margin:0;padding:0}
+header{background:#2563eb;color:white;text-align:center;padding:15px;font-size:20px}
 .container{max-width:900px;margin:auto;padding:20px}
-.card{background:white;border-radius:12px;padding:20px;box-shadow:0 10px 25px rgba(0,0,0,0.08)}
-button{border:none;border-radius:8px;padding:12px 16px;margin:6px;font-size:16px;cursor:pointer}
+.card{background:white;padding:20px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,0.1)}
+button{padding:12px;margin:6px 0;border:none;border-radius:8px;cursor:pointer;font-size:16px;width:100%}
+.answer{background:#eef2ff}
+.answer:hover{background:#dbe4ff}
 .primary{background:#2563eb;color:white}
 .secondary{background:#e5e7eb}
-.answer{display:block;width:100%;margin:8px 0;background:#f3f4f6}
-.answer:hover{background:#e5e7eb}
-#timer{font-weight:bold;text-align:center;margin-bottom:10px}
-#progress{text-align:center;margin-bottom:15px}
-.result{font-size:22px;text-align:center}
-.review{margin-top:20px}
-.flashcard{font-size:20px;text-align:center;padding:40px}
+#timer{text-align:center;font-weight:bold;margin-bottom:10px}
+#progress{text-align:center;margin-bottom:10px}
+.flash{text-align:center;font-size:22px;padding:30px}
+.result{text-align:center;font-size:22px}
 </style>
 </head>
 <body>
-<header>OFII Examen Civique Trainer Pro</header>
+<header>OFII Examen Civique Trainer</header>
 <div class="container">
 <div id="timer"></div>
 <div id="progress"></div>
@@ -31,221 +30,117 @@ button{border:none;border-radius:8px;padding:12px 16px;margin:6px;font-size:16px
 
 <script>
 
-/* ===== 400 QUESTION BANK (generated unique variants) ===== */
-
-const baseQuestions=[
+const questionBank=[
 {q:"Quelle est la devise de la République française ?",a:["Liberté Égalité Fraternité","Travail Famille Patrie","France Nation","Unité Justice"],c:0},
 {q:"Quel animal est un symbole de la France ?",a:["Le coq","Le lion","L’aigle","L’ours"],c:0},
 {q:"Quelle est la date de la fête nationale française ?",a:["14 juillet","1 mai","8 mai","11 novembre"],c:0},
 {q:"Quelle est la langue officielle de la République française ?",a:["Français","Anglais","Espagnol","Allemand"],c:0},
-{q:"Qui nomme le Premier ministre ?",a:["Le Président","Le Sénat","Les citoyens","Le Parlement"],c:0},
+{q:"Qui nomme le Premier ministre ?",a:["Le Président","Le Parlement","Les citoyens","Le Sénat"],c:0},
 {q:"Qui vote les lois ?",a:["Le Parlement","La police","Le maire","Le Président"],c:0},
 {q:"Quel est l'âge minimum pour voter ?",a:["18 ans","16 ans","21 ans","25 ans"],c:0},
-{q:"Que signifie la laïcité ?",a:["Neutralité de l'État","Religion obligatoire","Religion officielle","Interdiction religion"],c:0},
+{q:"Que signifie la laïcité ?",a:["Neutralité de l'État envers les religions","Religion obligatoire","Religion officielle","Interdiction religion"],c:0},
 {q:"Qui élit les députés ?",a:["Les citoyens","Le Sénat","Le Président","Les juges"],c:0},
 {q:"Quel est le rôle du maire ?",a:["Diriger la commune","Diriger l'État","Diriger l’armée","Diriger l’Europe"],c:0},
-{q:"Qui a rendu l'école gratuite et obligatoire ?",a:["Jules Ferry","Napoléon","Victor Hugo","De Gaulle"],c:0},
-{q:"En quelle année l'esclavage a-t-il été aboli définitivement en France ?",a:["1848","1789","1914","1958"],c:0},
-{q:"Qui veille au maintien de l'ordre public ?",a:["Police et gendarmerie","Parlement","Maire","Justice"],c:0},
-{q:"Quelle mer sépare la France et l'Angleterre ?",a:["La Manche","Atlantique","Méditerranée","Mer du Nord"],c:0},
+{q:"Qui a rendu l'école gratuite et obligatoire ?",a:["Jules Ferry","Napoléon","Victor Hugo","Charles de Gaulle"],c:0},
+{q:"En quelle année l’esclavage a-t-il été aboli définitivement en France ?",a:["1848","1789","1914","1958"],c:0},
 {q:"Quel numéro permet d'appeler le SAMU ?",a:["15","17","18","112"],c:0},
-{q:"Quel est le salaire minimum légal ?",a:["SMIC","RSA","CAF","TVA"],c:0},
-{q:"Qui rembourse les soins médicaux ?",a:["Sécurité sociale","La mairie","La police","La préfecture"],c:0},
-{q:"Qui était Victor Hugo ?",a:["Écrivain","Scientifique","Roi","Peintre"],c:0},
-{q:"Qui était Marie Curie ?",a:["Scientifique","Actrice","Reine","Sportive"],c:0},
-{q:"Dans quelle République sommes-nous ?",a:["Cinquième","Quatrième","Troisième","Deuxième"],c:0}
+{q:"Quel est le salaire minimum légal en France ?",a:["SMIC","RSA","CAF","TVA"],c:0},
+{q:"Qui rembourse les frais médicaux ?",a:["Sécurité sociale","La mairie","La police","La préfecture"],c:0},
+{q:"Qui était Victor Hugo ?",a:["Un écrivain","Un roi","Un scientifique","Un peintre"],c:0},
+{q:"Qui était Marie Curie ?",a:["Une scientifique","Une chanteuse","Une reine","Une actrice"],c:0},
+{q:"Quelle mer sépare la France et l’Angleterre ?",a:["La Manche","L'Atlantique","La mer du Nord","La Méditerranée"],c:0},
+{q:"Quelle est la plus haute montagne de France ?",a:["Mont Blanc","Ventoux","Puy de Dôme","Pic du Midi"],c:0},
+{q:"Quelle institution règle les conflits entre salariés et employeurs ?",a:["Le Conseil des Prud’hommes","La police","La mairie","La préfecture"],c:0}
 ];
 
-const questionBank = [...baseQuestions]
-let q=JSON.parse(JSON.stringify(baseQuestions[i%baseQuestions.length]));
-questionBank.push(q);
-}
-
-/* ===== UTIL ===== */
 function getRandomQuestions(bank,n){
-  const shuffled=[...bank].sort(()=>Math.random()-0.5)
-  return shuffled.slice(0,n)
+const shuffled=[...bank].sort(()=>Math.random()-0.5)
+return shuffled.slice(0,n)
 }
-function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
 
-/* ===== EXAM MODE ===== */
-
-let quiz=[];
-let index=0;
-let score=0;
-let timer;
-let timeLeft=2700;
-let wrong=[];
+let quiz=[]
+let index=0
+let score=0
+let wrong=[]
+let timer
+let timeLeft=2700
 
 function startExam(){
-quiz=getRandomQuestions(questionBank,40);
-index=0;
-score=0;
-wrong=[];
-timeLeft=2700;
-startTimer();
-showQuestion();
+quiz=getRandomQuestions(questionBank,Math.min(40,questionBank.length))
+index=0
+score=0
+wrong=[]
+timeLeft=2700
+startTimer()
+showQuestion()
 }
 
 function startTimer(){
-updateTimer();
-clearInterval(timer);
-
+updateTimer()
+clearInterval(timer)
 timer=setInterval(()=>{
-timeLeft--;
-updateTimer();
-if(timeLeft<=0)finishExam();
-},1000);
+timeLeft--
+updateTimer()
+if(timeLeft<=0){finishExam()}
+},1000)
 }
 
 function updateTimer(){
-let m=Math.floor(timeLeft/60);
-let s=timeLeft%60;
-document.getElementById("timer").innerText=`Temps restant: ${m}:${s.toString().padStart(2,'0')}`;
+let m=Math.floor(timeLeft/60)
+let s=timeLeft%60
+document.getElementById("timer").innerText="Temps restant: "+m+":"+String(s).padStart(2,"0")
 }
 
 function showQuestion(){
 if(index>=quiz.length){finishExam();return}
-
-let q=quiz[index];
-
-let answers=q.a.map((t,i)=>({t,i}));
-answers=shuffle(answers);
-
-let html=`<h3>${index+1}/40</h3><p>${q.q}</p>`;
-
+let q=quiz[index]
+let answers=q.a.map((t,i)=>({t,i}))
+answers=answers.sort(()=>Math.random()-0.5)
+let html="<h3>"+(index+1)+"/"+quiz.length+"</h3><p>"+q.q+"</p>"
 answers.forEach(a=>{
-html+=`<button class='answer' onclick='answer(${a.i})'>${a.t}</button>`;
-});
-
-document.getElementById("progress").innerText=`Question ${index+1} / 40`;
-document.getElementById("app").innerHTML=html;
+html+="<button class='answer' onclick='answer("+a.i+")'>"+a.t+"</button>"
+})
+document.getElementById("progress").innerText="Question "+(index+1)+" / "+quiz.length
+document.getElementById("app").innerHTML=html
 }
 
 function answer(i){
-let q=quiz[index];
-
-if(i===q.c){
-score++;
-}else{
-wrong.push(q);
-}
-
-index++;
-showQuestion();
+let q=quiz[index]
+if(i===q.c){score++}else{wrong.push(q)}
+index++
+showQuestion()
 }
 
 function finishExam(){
-clearInterval(timer);
-
-let percent=Math.round(score/40*100);
-let best=localStorage.getItem("bestScore")||0;
-
-if(percent>best){
-localStorage.setItem("bestScore",percent);
-best=percent;
+clearInterval(timer)
+let percent=Math.round(score/quiz.length*100)
+let pass=score>=Math.ceil(quiz.length*0.8)?"PASS":"FAIL"
+let html="<div class='result'>"
+html+="Score: "+score+"/"+quiz.length+" ("+percent+"%)<br><br>"
+html+=pass+"<br><br>"
+html+="<button class='primary' onclick='startExam()'>Repasser</button>"
+html+="<button class='secondary' onclick='review()'>Review erreurs</button>"
+html+="</div>"
+document.getElementById("app").innerHTML=html
 }
 
-let pass=score>=32?"✅ PASS":"❌ FAIL";
-
-let html=`
-<div class='result'>
-Score: ${score}/40 (${percent}%)<br>
-${pass}<br><br>
-Best score: ${best}%<br><br>
-<button class='primary' onclick='startExam()'>Repasser</button>
-<button class='secondary' onclick='reviewWrong()'>Review erreurs</button>
-<button class='secondary' onclick='startFlashcards()'>Flashcards</button>
-</div>`;
-
-
-document.getElementById("app").innerHTML=html;
-}
-
-/* ===== REVIEW MODE ===== */
-
-function reviewWrong(){
-if(wrong.length===0){
-alert("Aucune erreur 🎉");
-return;
-}
-
-let html="<h3>Questions incorrectes</h3>";
-
+function review(){
+if(wrong.length===0){alert("Aucune erreur");return}
+let html="<h3>Erreurs</h3>"
 wrong.forEach(q=>{
-html+=`<div class='review'><b>${q.q}</b><br>Bonne réponse: ${q.a[q.c]}</div>`;
-});
-
-html+="<br><button class='primary' onclick='startExam()'>Nouvel examen</button>";
-
-
-document.getElementById("app").innerHTML=html;
+html+="<p>"+q.q+"<br><b>"+q.a[q.c]+"</b></p>"
+})
+document.getElementById("app").innerHTML=html
 }
-
-/* ===== FLASHCARD MODE ===== */
-
-let flashIndex=0;
-
-function startFlashcards(){
-quiz=shuffle([...questionBank]).slice(0,20);
-flashIndex=0;
-showFlash();
-}
-
-function showFlash(){
-if(flashIndex>=quiz.length){
-startScreen();
-return;
-}
-
-let q=quiz[flashIndex];
-
-let html=`
-<div class='flashcard'>
-${q.q}<br><br>
-<button class='primary' onclick='showFlashAnswer()'>Voir réponse</button>
-</div>`;
-
-
-document.getElementById("app").innerHTML=html;
-}
-
-function showFlashAnswer(){
-let q=quiz[flashIndex];
-
-let html=`
-<div class='flashcard'>
-<b>${q.a[q.c]}</b><br><br>
-<button class='primary' onclick='nextFlash()'>Suivant</button>
-</div>`;
-
-
-document.getElementById("app").innerHTML=html;
-}
-
-function nextFlash(){
-flashIndex++;
-showFlash();
-}
-
-/* ===== HOME ===== */
 
 function startScreen(){
-
-let html=`
-<div style='text-align:center'>
-<h2>Simulation Examen Civique</h2>
-<p>40 questions • 45 minutes</p>
-<button class='primary' onclick='startExam()'>Commencer examen</button>
-<br>
-<button class='secondary' onclick='startFlashcards()'>Mode Flashcards</button>
-</div>`;
-
-
-document.getElementById("app").innerHTML=html;
+let html="<h2>Simulation examen civique</h2>"
+html+="<p>40 questions • 45 minutes</p>"
+html+="<button class='primary' onclick='startExam()'>Commencer examen</button>"
+document.getElementById("app").innerHTML=html
 }
 
-startScreen();
+startScreen()
 
 </script>
 </body>
