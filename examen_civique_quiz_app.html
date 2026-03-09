@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OFII Examen Civique Trainer</title>
+<style>
+body{font-family:Arial;background:#f3f6fb;margin:0;padding:20px}
+.container{max-width:900px;margin:auto;background:white;padding:25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+h1{text-align:center;margin-top:0}
+#timer{font-weight:bold;font-size:18px;text-align:center;margin-bottom:10px}
+#progress{text-align:center;margin-bottom:20px}
+.answers button{display:block;width:100%;margin:8px 0;padding:12px;border-radius:8px;border:none;background:#eef2ff;cursor:pointer}
+.answers button:hover{background:#dbe4ff}
+button.start{padding:14px 20px;font-size:18px;background:#2563eb;color:white;border:none;border-radius:10px;cursor:pointer}
+.result{text-align:center;font-size:22px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>OFII Examen Civique Simulator</h1>
+<div id="timer"></div>
+<div id="progress"></div>
+<div id="app"></div>
+</div>
+
+<script>
+
+/* ===== UNIQUE QUESTION BANK (sample – extendable to 300) ===== */
+
+const questions=[
+{q:"Quelle est la devise de la République française ?",a:["Liberté Égalité Fraternité","Travail Famille Patrie","Unité Force Justice","France Nation"],c:0},
+{q:"Quel animal est un symbole de la France ?",a:["Le coq","Le lion","L’aigle","L’ours"],c:0},
+{q:"Quelle est la date de la fête nationale française ?",a:["14 juillet","11 novembre","1 mai","8 mai"],c:0},
+{q:"Quelle est la langue officielle de la République française ?",a:["Français","Anglais","Espagnol","Allemand"],c:0},
+{q:"Qui nomme le Premier ministre ?",a:["Le Président de la République","Le Parlement","Les citoyens","Le Sénat"],c:0},
+{q:"Qui vote les lois en France ?",a:["Le Parlement","La police","Les maires","Le Président seul"],c:0},
+{q:"Quel est l'âge minimum pour voter ?",a:["18 ans","16 ans","21 ans","25 ans"],c:0},
+{q:"Que signifie la laïcité ?",a:["Neutralité de l'État envers les religions","Religion obligatoire","Interdiction religion","Religion officielle"],c:0},
+{q:"Qui élit les députés ?",a:["Les citoyens","Le Président","Le Sénat","Les juges"],c:0},
+{q:"Quel est le rôle du maire ?",a:["Diriger la commune","Diriger le pays","Diriger l’armée","Diriger l’Europe"],c:0},
+
+{q:"Qui peut être appelé à faire partie d’un jury d’assises ?",a:["Tout citoyen majeur inscrit sur les listes électorales","Les juges uniquement","Les avocats","Les policiers"],c:0},
+{q:"Que signifie la liberté d'expression ?",a:["Dire ce que l’on pense dans le respect de la loi","Faire ce que l’on veut","Critiquer seulement l'État","Ne jamais critiquer"],c:0},
+{q:"La polygamie est-elle autorisée en France ?",a:["Non","Oui","Oui sous conditions","Oui pour les hommes"],c:0},
+{q:"Quel texte fonde les droits de l’homme en France ?",a:["Déclaration des droits de l'homme de 1789","Code civil","Traité de Maastricht","Constitution européenne"],c:0},
+{q:"Qui veille au maintien de l'ordre public ?",a:["La police et la gendarmerie","Le Parlement","Les syndicats","Les maires"],c:0},
+
+{q:"Dans quelle République sommes-nous aujourd'hui ?",a:["Cinquième République","Quatrième","Troisième","Deuxième"],c:0},
+{q:"Qui a rendu l'école gratuite et obligatoire ?",a:["Jules Ferry","Napoléon","Victor Hugo","Charles de Gaulle"],c:0},
+{q:"En quelle année l'esclavage a-t-il été aboli définitivement en France ?",a:["1848","1789","1914","1958"],c:0},
+{q:"Quel pays a été colonisé par la France ?",a:["Algérie","Danemark","Pologne","Japon"],c:0},
+{q:"De quand date l’appel du Général de Gaulle ?",a:["18 juin 1940","8 mai 1945","11 novembre 1918","1958"],c:0},
+
+{q:"Quelle mer se situe entre la France et l’Angleterre ?",a:["La Manche","La Méditerranée","Atlantique","Mer du Nord"],c:0},
+{q:"Quelle est la plus haute montagne de France ?",a:["Mont Blanc","Ventoux","Puy de Dôme","Pic du Midi"],c:0},
+{q:"Quel monument se trouve sur une île en Normandie ?",a:["Mont-Saint-Michel","Arc de Triomphe","Louvre","Chambord"],c:0},
+{q:"Qui était Victor Hugo ?",a:["Un écrivain","Un roi","Un scientifique","Un peintre"],c:0},
+{q:"Qui était Marie Curie ?",a:["Une scientifique","Une chanteuse","Une reine","Une actrice"],c:0},
+
+{q:"Quel numéro permet d'appeler le SAMU ?",a:["15","17","18","112"],c:0},
+{q:"Quel est le salaire minimum légal en France ?",a:["SMIC","RSA","CAF","Prime"],c:0},
+{q:"Qui rembourse les frais médicaux ?",a:["Sécurité sociale","La mairie","La police","La préfecture"],c:0},
+{q:"Jusqu'à quel âge l'école est-elle obligatoire ?",a:["16 ans","18 ans","14 ans","15 ans"],c:0},
+{q:"Qui peut créer une entreprise en France ?",a:["Toute personne sous conditions","Seulement les Français","Seulement les hommes","Seulement les riches"],c:0}
+];
+
+/* ===== EXAM ENGINE ===== */
+
+let quiz=[];
+let index=0;
+let score=0;
+let timer;
+let timeLeft=2700;
+
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
+
+function startExam(){
+quiz=shuffle([...questions]).slice(0,40);
+index=0;
+score=0;
+timeLeft=2700;
+startTimer();
+showQuestion();
+}
+
+function startTimer(){
+updateTimer();
+timer=setInterval(()=>{
+timeLeft--;
+updateTimer();
+if(timeLeft<=0)finishExam();
+},1000);
+}
+
+function updateTimer(){
+let m=Math.floor(timeLeft/60);
+let s=timeLeft%60;
+document.getElementById('timer').innerHTML=`Temps restant: ${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function showQuestion(){
+if(index>=quiz.length){finishExam();return}
+
+let q=quiz[index];
+
+let html=`<h3>Question ${index+1} / 40</h3><p>${q.q}</p><div class='answers'>`;
+
+let answers=q.a.map((t,i)=>({t,i}));
+answers=shuffle(answers);
+
+answers.forEach(ans=>{
+html+=`<button onclick="answer(${ans.i})">${ans.t}</button>`;
+});
+
+html+='</div>';
+
+document.getElementById('progress').innerText=`${index+1}/40`;
+document.getElementById('app').innerHTML=html;
+}
+
+function answer(i){
+if(quiz[index].c===i)score++;
+index++;
+showQuestion();
+}
+
+function finishExam(){
+clearInterval(timer);
+
+let percent=Math.round(score/40*100);
+
+let best=localStorage.getItem('bestScore')||0;
+if(percent>best){
+localStorage.setItem('bestScore',percent);
+best=percent;
+}
+
+let pass=score>=32?"✅ PASS":"❌ FAIL";
+
+document.getElementById('app').innerHTML=`
+<div class='result'>
+Score: ${score}/40 (${percent}%)<br>
+Result: ${pass}<br><br>
+Best score: ${best}%<br><br>
+<button class='start' onclick='startExam()'>Repasser l'examen</button>
+</div>`;
+}
+
+/* start screen */
+
+document.getElementById('app').innerHTML=`
+<div style='text-align:center'>
+<p>Simulation officielle examen civique</p>
+<p>40 questions – 45 minutes</p>
+<button class='start' onclick='startExam()'>Commencer</button>
+</div>`;
+
+</script>
+</body>
+</html>
